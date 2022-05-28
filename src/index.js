@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const morgan = require("morgan");
 const { port } = require("./config");
 const connectToDb = require("./db");
 
@@ -12,6 +13,7 @@ const startServer = () => {
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
   app.use(cors());
+  app.use(morgan("tiny"));
 
   // Use routes
   require("./routes")(app);

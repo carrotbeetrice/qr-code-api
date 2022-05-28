@@ -6,6 +6,8 @@ const {
   maxRefreshTokenAge,
 } = require("../config").jwt;
 
+// TODO: Sign tokens asynchronously
+
 const generateTokens = (payload) => {
   let accessToken = jwt.sign(payload, accessTokenSecret, {
     expiresIn: maxAccessTokenAge,
