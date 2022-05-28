@@ -1,15 +1,14 @@
 const router = require("express").Router();
-const User = require("../models/User");
 const { StatusCodes } = require("http-status-codes");
 const { generateTokens, newAccessToken } = require("../utils/jwt");
+const { userQueries } = require("../queries");
 
 // User login
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const result = await User.findOne({ email, password }).exec();
-
+    const result = await userQueries.login(email, password);
     if (!result) {
       return res
         .status(StatusCodes.BAD_REQUEST)
@@ -17,7 +16,7 @@ router.post("/login", async (req, res) => {
     }
 
     const { accessToken, refreshToken } = generateTokens({
-      id: result.id,
+      id: result._id,
     });
 
     return res.send({ accessToken, refreshToken });
@@ -30,7 +29,6 @@ router.post("/login", async (req, res) => {
 router.get("/token", (req, res) => {
   const authHeader = req.headers.authorization;
 
-  // TODO: Verify refresh token
   if (authHeader) {
     if (authHeader.startsWith("Bearer")) {
       const refreshToken = authHeader.split(" ")[1];
