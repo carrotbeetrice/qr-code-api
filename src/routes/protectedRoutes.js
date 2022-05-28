@@ -39,7 +39,6 @@ router.use(async (req, res, next) => {
   }
 });
 
-// TODO: Handle JSON-formatted QR code data
 // Upload data via QR code
 router.post("/", upload.single("qr-code"), async (req, res) => {
   if (!req.file) {
@@ -54,14 +53,22 @@ router.post("/", upload.single("qr-code"), async (req, res) => {
       return res.status(StatusCodes.BAD_REQUEST).send("Cannot parse QR code.");
     }
 
+    let data = null;
+    // Attempt to parse as JSON
+    try {
+      data = JSON.parse(result.data);
+    } catch (err) {
+      data = result.data;
+    }
+
     // Check for title in request body. Title indicates an update to existing data
     const titleToUpdate = req.body.title;
     if (titleToUpdate) {
-      const newDoc = await qrDataQueries.update(titleToUpdate, result.data);
+      const newDoc = await qrDataQueries.update(titleToUpdate, data, req.user);
       return res.status(StatusCodes.CREATED).send(newDoc);
     } else {
       const title = nanoid(20); // For simplicity, set title a random id for new data
-      const newDoc = await qrDataQueries.create(title, result.data, req.user);
+      const newDoc = await qrDataQueries.create(title, data, req.user);
       return res.status(StatusCodes.CREATED).send(newDoc);
     }
   } catch (err) {

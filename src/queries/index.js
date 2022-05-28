@@ -4,7 +4,7 @@ const { Types } = require("mongoose");
 module.exports = {
   userQueries: {
     login: async (email, password) => {
-      const result = await UserModel.findOne({ email, password });
+      const result = await UserModel.findOne({ email, password }).exec();
       return result;
     },
     exists: async (id) => {
@@ -26,10 +26,11 @@ module.exports = {
         uploadedBy,
       });
     },
-    update: async (title, data) => {
+    update: async (title, data, userId) => {
+      const updatedBy = Types.ObjectId(userId);
       return await QRDataModel.findOneAndUpdate(
         { title },
-        { data },
+        { data, updatedBy },
         { new: true, upsert: true }
       );
     },
@@ -38,6 +39,18 @@ module.exports = {
         { title },
         { maxTimeMS: 1000 }
       );
+      return result;
+    },
+    findOne: async (title) => {
+      const result = await QRDataModel.findOne({ title })
+        .populate("uploadedBy", "email")
+        .exec();
+      return result;
+    },
+    findAll: async () => {
+      const result = await QRDataModel.find({})
+        .populate("uploadedBy", "email")
+        .exec();
       return result;
     },
   },
