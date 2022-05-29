@@ -2,9 +2,12 @@ import React from "react";
 import { CssBaseline } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import About from "./pages/About";
 import Home from "./pages/Home";
+import Login from "./pages/Login";
 import Navbar from "./components/Navbar";
+import { RequireAuth } from "./components/RequireAuth";
+import { AuthProvider } from "./components/AuthUser";
+import Upload from "./pages/Upload";
 
 function App() {
   const theme = createTheme({
@@ -15,24 +18,25 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      {/* <Navbar /> */}
-      <Router>
-        <div className="App">
-          <header className="App-header">
-            <Routes>
-              <Route index path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              {/* <Route path="/users" element={<Users />} /> */}
-            </Routes>
-          </header>
-        </div>
-      </Router>
+      <AuthProvider>
+        <Router>
+          <Navbar />
+          <Routes>
+            <Route index path="/" element={<h1>Home</h1>} />
+            <Route
+              path="/upload"
+              element={
+                <RequireAuth>
+                  <Upload />
+                </RequireAuth>
+              }
+            />
+            <Route path="/login" element={<Login />} />
+          </Routes>
+        </Router>
+      </AuthProvider>
     </ThemeProvider>
   );
 }
-
-// function Users() {
-//   return <h2>Users</h2>;
-// }
 
 export default App;

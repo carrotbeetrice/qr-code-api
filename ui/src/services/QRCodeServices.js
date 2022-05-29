@@ -5,12 +5,13 @@ const accessToken = localStorage.getItem("accessToken");
 const protectedAxiosInstance = axios.create({
   baseURL: "http://localhost:8080/qr",
   headers: {
-    Bearer: accessToken,
+    Authorization: "Bearer " + accessToken,
   },
   validateStatus: (status) => status < 500,
 });
 
 export const uploadData = async (image, title) => {
+  console.log(accessToken);
   const formData = new FormData();
   formData.append("qr-code", image);
   if (title && title !== "") {

@@ -5,7 +5,7 @@ import FileDropZone from "../components/FileDropZone";
 import ShowImage from "../components/ShowImage";
 import { uploadData } from "../services/QRCodeServices";
 
-const Home = () => {
+const Upload = () => {
   const [image, setImage] = useState(null);
   const [title, setTitle] = useState(null);
   const [disabled, setDisabled] = useState(false);
@@ -109,4 +109,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Upload;
