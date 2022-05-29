@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Navbar from "./components/Navbar";
+import Delete from "./pages/Delete";
 import { RequireAuth } from "./components/RequireAuth";
 import { AuthProvider } from "./components/AuthUser";
 import Upload from "./pages/Upload";
@@ -22,12 +23,20 @@ function App() {
         <Router>
           <Navbar />
           <Routes>
-            <Route index path="/" element={<h1>Home</h1>} />
+            <Route index path="/" element={<Home />} />
             <Route
               path="/upload"
               element={
                 <RequireAuth>
                   <Upload />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/delete"
+              element={
+                <RequireAuth>
+                  <Delete />
                 </RequireAuth>
               }
             />

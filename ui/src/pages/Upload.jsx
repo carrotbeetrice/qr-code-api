@@ -6,8 +6,9 @@ import ShowImage from "../components/ShowImage";
 import { uploadData } from "../services/QRCodeServices";
 
 const Upload = () => {
-  const [image, setImage] = useState(null);
-  const [title, setTitle] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [imageSent, setImageSent] = useState(null);
+  const [title, setTitle] = useState("");
   const [disabled, setDisabled] = useState(false);
   const [alertSettings, setAlertSettings] = useState({
     open: false,
@@ -18,16 +19,19 @@ const Upload = () => {
   const onDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles.length > 0) {
       const file = acceptedFiles[0];
-      console.log(file);
+      setImageSent(file);
       const reader = new FileReader();
       reader.onload = (e) => {
-        setImage({ id: file.name, src: e.target.result });
+        setPreviewImage({ id: file.name, src: e.target.result });
       };
       reader.readAsDataURL(file);
     }
   }, []);
 
-  const onTitleChange = useCallback((input) => setTitle(input), []);
+  const onTitleChange = (e) => {
+    const value = e.target.value;
+    setTitle(value || "");
+  };
 
   const onAlertClose = () => {
     setAlertSettings({
@@ -38,21 +42,16 @@ const Upload = () => {
 
   const handleUpload = async () => {
     setDisabled(true);
-    const result = await uploadData(image, title);
+    const result = await uploadData(imageSent, title);
     if (result.success) {
-      if (title && title !== "") {
-        setAlertSettings({
-          ...alertSettings,
-          open: true,
-          message: `${result.message} for title ${title}.`,
-        });
-      } else {
-        setAlertSettings({
-          ...alertSettings,
-          open: true,
-          message: `${result.message}. New title ${title} added.`,
-        });
-      }
+      setAlertSettings({
+        severity: "success",
+        open: true,
+        message:
+          title && title !== ""
+            ? `${result.message} for title ${title}.`
+            : `${result.message}. New title ${title} added.`,
+      });
     } else {
       setAlertSettings({
         open: true,
@@ -72,6 +71,7 @@ const Upload = () => {
           flexDirection: "column",
           alignItems: "center",
         }}
+        gap={3}
       >
         <Snackbar
           open={alertSettings.open}
@@ -90,18 +90,24 @@ const Upload = () => {
             {alertSettings.message}
           </Alert>
         </Snackbar>
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
           Upload QR Code
         </Typography>
         <FileDropZone disabled={disabled} onDrop={onDrop} />
         <TextField
+          // margin="normal"
           disabled={disabled}
           label="Title (Optional)"
           value={title}
           onChange={onTitleChange}
         />
-        <ShowImage image={image} />
-        <Button variant="contained" onClick={handleUpload} disabled={disabled}>
+        <ShowImage image={previewImage} />
+        <Button
+          variant="contained"
+          onClick={handleUpload}
+          disabled={disabled}
+          // sx={{ mt: 3, mb: 2 }}
+        >
           Upload
         </Button>
       </Box>

@@ -1,66 +1,38 @@
-import { Alert, Button, Snackbar, TextField, Typography } from "@mui/material";
+import { Button, TextField, Typography } from "@mui/material";
 import { Box, Container } from "@mui/system";
-import React, { useCallback, useState } from "react";
-import FileDropZone from "../components/FileDropZone";
-import ShowImage from "../components/ShowImage";
-import { uploadData } from "../services/QRCodeServices";
+import React, { useState } from "react";
+import { searchTitle } from "../services/SearchService";
 
 const Home = () => {
-  const [image, setImage] = useState(null);
-  const [title, setTitle] = useState(null);
-  const [disabled, setDisabled] = useState(false);
-  const [alertSettings, setAlertSettings] = useState({
-    open: false,
-    message: "",
-    severity: "success",
+  const [title, setTitle] = useState("");
+  const [disabled, setDisabled] = useState(true);
+  const [resultSection, setResultSection] = useState({
+    visible: false,
+    value: null,
+    text: "",
   });
 
-  const onDrop = useCallback((acceptedFiles) => {
-    if (acceptedFiles.length > 0) {
-      const file = acceptedFiles[0];
-      console.log(file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImage({ id: file.name, src: e.target.result });
-      };
-      reader.readAsDataURL(file);
-    }
-  }, []);
-
-  const onTitleChange = useCallback((input) => setTitle(input), []);
-
-  const onAlertClose = () => {
-    setAlertSettings({
-      ...alertSettings,
-      open: false,
-    });
+  const onTitleChange = (e) => {
+    const value = e.target.value;
+    setTitle(value || "");
+    setDisabled(!(value && value !== ""));
   };
 
-  const handleUpload = async () => {
-    setDisabled(true);
-    const result = await uploadData(image, title);
-    if (result.success) {
-      if (title && title !== "") {
-        setAlertSettings({
-          ...alertSettings,
-          open: true,
-          message: `${result.message} for title ${title}.`,
-        });
-      } else {
-        setAlertSettings({
-          ...alertSettings,
-          open: true,
-          message: `${result.message}. New title ${title} added.`,
-        });
-      }
+  const handleSearch = async () => {
+    const searchResult = await searchTitle(title);
+    if (searchResult) {
+      setResultSection({
+        visible: true,
+        value: searchResult,
+        text: "Search result for title " + title + ":",
+      });
     } else {
-      setAlertSettings({
-        open: true,
-        severity: "error",
-        message: result.message,
+      setResultSection({
+        visible: true,
+        value: null,
+        text: "No results for title " + title + ".",
       });
     }
-    setDisabled(false);
   };
 
   return (
@@ -73,37 +45,42 @@ const Home = () => {
           alignItems: "center",
         }}
       >
-        <Snackbar
-          open={alertSettings.open}
-          autoHideDuration={6000}
-          onClose={onAlertClose}
-          anchorOrigin={{
-            vertical: "top",
-            horizontal: "center",
-          }}
-        >
-          <Alert
-            onClose={onAlertClose}
-            severity={alertSettings.severity}
-            sx={{ width: "100%" }}
-          >
-            {alertSettings.message}
-          </Alert>
-        </Snackbar>
         <Typography component="h1" variant="h5">
-          Upload QR Code
+          Search Data By Title
         </Typography>
-        <FileDropZone disabled={disabled} onDrop={onDrop} />
         <TextField
-          disabled={disabled}
-          label="Title (Optional)"
+          margin="normal"
+          fullWidth
+          label="Title"
           value={title}
           onChange={onTitleChange}
+          helperText="Start typing to enable search button"
         />
-        <ShowImage image={image} />
-        <Button variant="contained" onClick={handleUpload} disabled={disabled}>
-          Upload
+        <Button
+          disabled={disabled}
+          type="submit"
+          variant="contained"
+          onClick={handleSearch}
+          sx={{ mt: 2 }}
+        >
+          Search
         </Button>
+        {resultSection.visible ? (
+          <Box margin={3} maxWidth="100%">
+            <Typography component="h1" variant="h6">
+              {resultSection.text}
+            </Typography>
+            {(
+              <Box sx={{ overflow: "auto" }}>
+                <div>
+                  <pre>{resultSection.value}</pre>
+                </div>
+              </Box>
+            ) || <></>}
+          </Box>
+        ) : (
+          <></>
+        )}
       </Box>
     </Container>
   );

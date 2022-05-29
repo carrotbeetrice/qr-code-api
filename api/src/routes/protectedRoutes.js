@@ -40,7 +40,7 @@ router.use(async (req, res, next) => {
 });
 
 // Upload data via QR code
-router.post("/", upload.single("qr-code"), async (req, res) => {
+router.post("/", upload.single("qrCode"), async (req, res) => {
   if (!req.file) {
     return res.status(StatusCodes.BAD_REQUEST).send("Missing QR code file.");
   }
@@ -50,7 +50,9 @@ router.post("/", upload.single("qr-code"), async (req, res) => {
     const qrCodeImageArray = new Uint8ClampedArray(img.bitmap.data.buffer);
     const result = jsQR(qrCodeImageArray, img.bitmap.height, img.bitmap.width);
     if (!result) {
-      return res.status(StatusCodes.BAD_REQUEST).send("Cannot parse QR code.");
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .send("Cannot parse image. Ensure image has exactly one QR code.");
     }
 
     let data = null;

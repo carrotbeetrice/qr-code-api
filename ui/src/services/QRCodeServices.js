@@ -11,12 +11,14 @@ const protectedAxiosInstance = axios.create({
 });
 
 export const uploadData = async (image, title) => {
-  console.log(accessToken);
+  console.log(image);
   const formData = new FormData();
-  formData.append("qr-code", image);
+  formData.append("qrCode", image);
   if (title && title !== "") {
     formData.append("title", title);
   }
+  // console.log(formData.get("qrCode"));
+  // console.log(formData.get("title"));
 
   let uploadResult = {
     success: true,
@@ -56,7 +58,9 @@ export const deleteData = async (title) => {
     message: "",
   };
   try {
-    const response = await protectedAxiosInstance.delete(`/${title}`);
+    const response = await protectedAxiosInstance.delete("/", {
+      data: { title },
+    });
     if (response.status === 200) {
       deleteResult.message = `Title ${response.data.title} successfully deleted`;
     } else {

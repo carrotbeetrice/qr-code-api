@@ -5,13 +5,19 @@ const searchAxiosInstance = axios.create({
   validateStatus: (status) => status < 500,
 });
 
-// TODO: Error handling. Also data sanitization for the title
-export const searchAll = async () => {
-  const response = await searchAxiosInstance.get("/");
-  return response.data;
-};
+// export const searchAll = async () => {
+//   const response = await searchAxiosInstance.get("/");
+//   return response.data;
+// };
 
+// TODO: Data sanitization for the title
 export const searchTitle = async (title) => {
   const response = await searchAxiosInstance.get(`/${title}`);
-  return response.data;
+  if (response.status === 404) return null;
+  console.log(typeof response.data, response.data);
+  try {
+    return JSON.stringify(response.data.data, null, "\t");
+  } catch (e) {
+    return response.data.data;
+  }
 };

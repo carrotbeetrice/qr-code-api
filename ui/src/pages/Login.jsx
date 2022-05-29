@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { Snackbar, Alert } from "@mui/material";
 import Container from "@mui/material/Container";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../components/AuthUser";
 import * as yup from "yup";
 import { useFormik } from "formik";
@@ -111,6 +111,7 @@ const Login = () => {
           <TextField
             margin="normal"
             fullWidth
+            type="password"
             id="password"
             name="password"
             label="Password"
