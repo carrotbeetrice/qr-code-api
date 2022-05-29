@@ -34,7 +34,11 @@ router.get("/token", (req, res) => {
       const refreshToken = authHeader.split(" ")[1];
       const accessToken = newAccessToken(refreshToken);
 
-      res.send(accessToken);
+      if (accessToken) {
+        res.send(accessToken);
+      } else {
+        res.sendStatus(StatusCodes.UNAUTHORIZED);
+      }
     } else {
       res.status(StatusCodes.BAD_REQUEST).send("Refresh token missing");
     }

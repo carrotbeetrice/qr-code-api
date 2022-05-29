@@ -25,17 +25,17 @@ router.use(async (req, res, next) => {
           req.user = id;
           next();
         } else {
-          return res.status(StatusCodes.UNAUTHORIZED);
+          return res.sendStatus(StatusCodes.UNAUTHORIZED);
         }
       } catch (e) {
         console.log(e);
-        return res.sendStatus(StatusCodes.BAD_REQUEST);
+        return res.sendStatus(StatusCodes.UNAUTHORIZED);
       }
     } else {
-      return res.sendStatus(StatusCodes.FORBIDDEN);
+      return res.sendStatus(StatusCodes.UNAUTHORIZED);
     }
   } else {
-    return res.sendStatus(StatusCodes.FORBIDDEN);
+    return res.sendStatus(StatusCodes.UNAUTHORIZED);
   }
 });
 

@@ -20,11 +20,15 @@ const generateTokens = (payload) => {
 };
 
 const newAccessToken = (refreshToken) => {
-  let { id, username } = jwt.verify(refreshToken, refreshTokenSecret);
-  let newAccessToken = jwt.sign({ id, username }, accessTokenSecret, {
-    expiresIn: maxAccessTokenAge,
-  });
-  return newAccessToken;
+  try {
+    let { id, username } = jwt.verify(refreshToken, refreshTokenSecret);
+    let newAccessToken = jwt.sign({ id, username }, accessTokenSecret, {
+      expiresIn: maxAccessTokenAge,
+    });
+    return newAccessToken;
+  } catch (e) {
+    return null;
+  }
 };
 
 module.exports = { generateTokens, newAccessToken };

@@ -17,10 +17,10 @@ router.get("/:title", async (req, res) => {
   }
 });
 
-// Search all documents
-router.get("/", async (req, res) => {
-  const data = await qrDataQueries.findAll();
-  return res.send(data);
-});
+// // Search all documents
+// router.get("/", async (req, res) => {
+//   const data = await qrDataQueries.findAll();
+//   return res.send(data);
+// });
 
 module.exports = router;
